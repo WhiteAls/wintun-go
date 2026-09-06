@@ -123,16 +123,13 @@ func OpenAdapter(name string) (wintun *Adapter, err error) {
 }
 
 // Close closes a Wintun adapter.
-func (wintun *Adapter) Close() (err error) {
+func (wintun *Adapter) Close() error {
 	if err := procWintunCloseAdapter.Find(); err != nil {
 		return err
 	}
 	runtime.SetFinalizer(wintun, nil)
-	r1, _, e1 := syscall.Syscall(procWintunCloseAdapter.Addr(), 1, wintun.handle, 0, 0)
-	if r1 == 0 {
-		err = e1
-	}
-	return
+	syscall.Syscall(procWintunCloseAdapter.Addr(), 1, wintun.handle, 0, 0)
+	return nil
 }
 
 // Uninstall removes the driver from the system if no drivers are currently in use.
